@@ -1,6 +1,5 @@
 package com.example.WebLab1.Repository.RepositoryImpl;
 
-import com.example.WebLab1.Model.Project;
 import com.example.WebLab1.Model.Task;
 import com.example.WebLab1.Repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +21,7 @@ public class TaskRepositoryImpl implements TaskRepository {
                 .description(resultSet.getString("description"))
                 .plannedDate(resultSet.getDate("plannedDate"))
                 .isCompleted(resultSet.getBoolean("isCompleted"))
+                .projectId(resultSet.getLong("projectId"))
                 .build();
         return task;
     };
@@ -29,11 +29,15 @@ public class TaskRepositoryImpl implements TaskRepository {
     @Override
     public Task save(Task newTask) {
         generateId(newTask);
-        jdbcTemplate.update("INSERT into task (id, name, description, plannedDate, isCompleted) VALUES (?, ?, ?, ?, ?)",
+        jdbcTemplate.update("INSERT into task (id, name, description, plannedDate, isCompleted, projectId) VALUES (?, ?, ?, ?, ?, ?)",
                 newTask.getId(),
-                newTask.getName(), newTask.getDescription(), newTask.getPlannedDate(),
-                newTask.isCompleted());
-        return findById(newTask.getId());
+                newTask.getName(),
+                newTask.getDescription(),
+                newTask.getPlannedDate(),
+                newTask.isCompleted(), 
+                newTask.getProjectId()
+                );
+        return (newTask);
     }
 
     @Override
@@ -48,16 +52,25 @@ public class TaskRepositoryImpl implements TaskRepository {
 
     @Override
     public Task update(Task newTask) {
-        jdbcTemplate.update("update task set name=?, description=?, plannedDate=?, isCompleted=? where id=?",
-                newTask.getName(), newTask.getDescription(), newTask.getPlannedDate(), newTask.isCompleted(), newTask.getId());
-        return findById(newTask.getId());
+        jdbcTemplate.update(
+            "update task set name=?, description=?, plannedDate=?, isCompleted=? where id=?",
+                newTask.getName(),
+                newTask.getDescription(),
+                newTask.getPlannedDate(),
+                newTask.isCompleted(),
+                newTask.getId()
+                );
+        return (newTask);
     }
 
+    @Override
+    public void deleteByProject(Long id) {
+        jdbcTemplate.update("delete from task where projectId=?", id);
+    }
     @Override
     public void delete(Long id) {
         jdbcTemplate.update("delete from task where id=?", id);
     }
-
     private Task generateId(Task task){
         if (task.getId() == null) {
             Long id = jdbcTemplate.query("SELECT nextval('task_sequence')",

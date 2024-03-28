@@ -10,4 +10,5 @@ public interface TaskRepository {
     List<Task> findAllByProjectId(Long id);
     Task update(Task newTask);
     void delete(Long id);
+    void deleteByProject(Long id);
 }

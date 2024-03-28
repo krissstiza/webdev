@@ -16,4 +16,5 @@ public class Task {
     private Date plannedDate;
     @Builder.Default
     private boolean isCompleted = false;
+    private Long projectId;
 }

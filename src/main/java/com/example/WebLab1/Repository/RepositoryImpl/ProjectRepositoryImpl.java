@@ -1,6 +1,7 @@
 package com.example.WebLab1.Repository.RepositoryImpl;
 
 import com.example.WebLab1.Model.Project;
+import com.example.WebLab1.Model.Task;
 import com.example.WebLab1.Repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -55,8 +56,30 @@ public class ProjectRepositoryImpl implements ProjectRepository {
 
     @Override
     public Project update(Project newProject) {
-        jdbcTemplate.update("update project set name=?, description=?, startDate=?, endDate=? where id=?",
-                newProject.getName(), newProject.getDescription(), newProject.getStartDate(), newProject.getEndDate(), newProject.getId());
+        jdbcTemplate.update(
+            "update project set name=?, description=?, startDate=?, endDate=? where id=?",
+                newProject.getName(),
+                newProject.getDescription(),
+                newProject.getStartDate(),
+                newProject.getEndDate(),
+                newProject.getId()
+            );
+        jdbcTemplate.batchUpdate(
+            "update task set",
+            newProject
+                .getTasks()
+                .stream()
+                .map(
+                    t -> new Object[] {
+                        t.getId(),
+                        t.getName(),
+                        t.getDescription(),
+                        t.getPlannedDate(),
+                        t.isCompleted(),
+                        t.getProjectId()
+                    }
+                ).toList()
+        );
         return newProject;
     }
 

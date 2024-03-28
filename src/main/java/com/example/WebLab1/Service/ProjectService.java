@@ -46,11 +46,7 @@ public class ProjectService {
 
     public List<Project> readAll() {
         List<Project> projects = projectRepository.findAll();
-        List<Project> newProjects = new ArrayList<>();
-        for(int i=0; i<projects.size(); i++) {
-            newProjects.add(readProject(projects.get(i).getId()));
-        }
-        return newProjects;
+        return projects;
     }
 
     public List<Project> readFilter(Date startDate, Date endDate) {
@@ -58,12 +54,8 @@ public class ProjectService {
             throw new RuntimeException();
         }*/
         List<Project> projects = projectRepository.filter(startDate, endDate);
-        List<Project> newProjects = new ArrayList<>();
-
-        for(int i=0; i<projects.size(); i++) {
-            newProjects.add(readProject(projects.get(i).getId()));
-        }
-        return newProjects;
+      
+        return projects;
         //  return projectRepository.filter(startDate, endDate);
     }
 
